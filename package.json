@@ -1,0 +1,29 @@
+{
+  "name": "pokedex",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "We'll use the incredible PokéAPI to fetch all of the data we'll need using GET requests. If you're not familiar with Pokemon, or a Pokedex, that's okay! A Pokedex is just a make-believe device that lets us look up information about Pokemon - things like their name, type, and stats.",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/main.js",
+    "dev": "npx tsc && node dist/main.js",
+    "test": "vitest --run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/howardsolutions/pokedex.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/howardsolutions/pokedex/issues"
+  },
+  "homepage": "https://github.com/howardsolutions/pokedex#readme",
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}
