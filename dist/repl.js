@@ -1,4 +1,5 @@
 import { createInterface } from "readline";
+import { getCommands } from "./command_registry.js";
 export function startREPL() {
     // Readline interface
     const rl = createInterface({
@@ -6,16 +7,29 @@ export function startREPL() {
         output: process.stdout,
         prompt: 'Pokedex > '
     });
+    // Get the command registry
+    const commands = getCommands();
     // display the prompt
     rl.prompt();
     rl.on("line", (line) => {
-        console.log(`Received: ${line}`);
         const cleanedInputs = cleanInput(line);
         if (cleanedInputs.length == 0) {
             rl.prompt();
             return;
         }
-        console.log(`Your command was: ${cleanedInputs[0]}`);
+        const commandName = cleanedInputs[0];
+        const command = commands[commandName];
+        if (command) {
+            try {
+                command.callback(commands);
+            }
+            catch (error) {
+                console.error("Error executing command:", error);
+            }
+        }
+        else {
+            console.log("Unknown command");
+        }
         rl.prompt();
     });
     // Handle process exit to close readline properly

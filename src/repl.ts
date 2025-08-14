@@ -1,4 +1,6 @@
 import { createInterface } from "readline";
+import type { CLICommand } from "./command.js";
+import { getCommands } from "./command_registry.js";
 
 export function startREPL() {
   // Readline interface
@@ -8,12 +10,13 @@ export function startREPL() {
     prompt: 'Pokedex > '
   })
 
+  // Get the command registry
+  const commands = getCommands();
+
   // display the prompt
   rl.prompt();
 
-  rl.on("line", (line) => {
-    console.log(`Received: ${line}`);
-
+  rl.on("line", (line: string) => {
     const cleanedInputs = cleanInput(line);
 
     if (cleanedInputs.length == 0) {
@@ -21,7 +24,19 @@ export function startREPL() {
       return;
     }
     
-    console.log(`Your command was: ${cleanedInputs[0]}`);
+    const commandName = cleanedInputs[0];
+    const command = commands[commandName];
+    
+    if (command) {
+      try {
+        command.callback(commands);
+      } catch (error) {
+        console.error("Error executing command:", error);
+      }
+    } else {
+      console.log("Unknown command");
+    }
+    
     rl.prompt();
   });
 
