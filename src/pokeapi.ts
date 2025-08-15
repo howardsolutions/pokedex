@@ -3,6 +3,8 @@ import { Cache } from './pokecache';
 export class PokeAPI {
     private static readonly baseURL = "https://pokeapi.co/api/v2";
     private cache: Cache;
+    private cacheHits = 0;
+    private cacheMisses = 0;
 
     constructor(cache: Cache) {
         this.cache = cache;
@@ -11,15 +13,23 @@ export class PokeAPI {
     async fetchLocations(pageURL?: string | null): Promise<ShallowLocations> {
         const url = pageURL || `${PokeAPI.baseURL}/location-area/`;
         
+        console.log(`\n🔍 Requesting locations data...`);
+        
         // Check cache first
         const cached = this.cache.get(url);
         if (cached) {
-            console.log(`Using cached data for: ${url}`);
+            this.cacheHits++;
+            const age = Date.now() - cached.createdAt;
+            console.log(`✅ CACHE HIT! Using cached data (age: ${Math.round(age / 1000)}s)`);
+            console.log(`📊 Cache stats: ${this.cacheHits} hits, ${this.cacheMisses} misses`);
             return cached.val;
         }
 
         // Make request if not in cache
-        console.log(`Fetching data for: ${url}`);
+        this.cacheMisses++;
+        console.log(`⏳ CACHE MISS! Fetching fresh data from API...`);
+        
+        const startTime = Date.now();
         const response = await fetch(url);
         
         if (!response.ok) {
@@ -27,10 +37,12 @@ export class PokeAPI {
         }
         
         const data = await response.json();
+        const fetchTime = Date.now() - startTime;
         
         // Add to cache
         this.cache.add(url, data);
-        console.log(`Added to cache: ${url}`);
+        console.log(`💾 Added to cache (fetch time: ${fetchTime}ms)`);
+        console.log(`📊 Cache stats: ${this.cacheHits} hits, ${this.cacheMisses} misses`);
         
         return data;
     }
@@ -38,15 +50,23 @@ export class PokeAPI {
     async fetchLocation(locationName: string): Promise<Location> {
         const url = `${PokeAPI.baseURL}/location-area/${locationName}/`;
         
+        console.log(`\n🔍 Requesting location data for: ${locationName}...`);
+        
         // Check cache first
         const cached = this.cache.get(url);
         if (cached) {
-            console.log(`Using cached data for: ${url}`);
+            this.cacheHits++;
+            const age = Date.now() - cached.createdAt;
+            console.log(`✅ CACHE HIT! Using cached data (age: ${Math.round(age / 1000)}s)`);
+            console.log(`📊 Cache stats: ${this.cacheHits} hits, ${this.cacheMisses} misses`);
             return cached.val;
         }
 
         // Make request if not in cache
-        console.log(`Fetching data for: ${url}`);
+        this.cacheMisses++;
+        console.log(`⏳ CACHE MISS! Fetching fresh data from API...`);
+        
+        const startTime = Date.now();
         const response = await fetch(url);
         
         if (!response.ok) {
@@ -54,12 +74,22 @@ export class PokeAPI {
         }
         
         const data = await response.json();
+        const fetchTime = Date.now() - startTime;
         
         // Add to cache
         this.cache.add(url, data);
-        console.log(`Added to cache: ${url}`);
+        console.log(`💾 Added to cache (fetch time: ${fetchTime}ms)`);
+        console.log(`📊 Cache stats: ${this.cacheHits} hits, ${this.cacheMisses} misses`);
         
         return data;
+    }
+
+    getCacheStats() {
+        return {
+            hits: this.cacheHits,
+            misses: this.cacheMisses,
+            hitRate: this.cacheHits / (this.cacheHits + this.cacheMisses) * 100
+        };
     }
 }
 

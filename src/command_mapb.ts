@@ -1,12 +1,15 @@
 import type { State } from "./state.js";
 
 export async function commandMapBack(state: State): Promise<void> {
+  const startTime = Date.now();
+  
   try {
     if (!state.prevLocationsURL) {
       console.log("No previous locations to show. Use 'map' first to explore locations.");
       return;
     }
     
+    console.log("🗺️  Fetching previous locations...");
     const locations = await state.pokeAPI.fetchLocations(state.prevLocationsURL);
     
     // Display the location names
@@ -25,6 +28,9 @@ export async function commandMapBack(state: State): Promise<void> {
     if (locations.previous) {
       console.log("Type 'mapb' again to go back to previous locations.");
     }
+    
+    const totalTime = Date.now() - startTime;
+    console.log(`\n⏱️  Total execution time: ${totalTime}ms`);
     
   } catch (error) {
     console.error("Error fetching previous locations:", error);

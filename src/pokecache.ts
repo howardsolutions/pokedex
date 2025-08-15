@@ -35,9 +35,16 @@ export class Cache {
     }
 
     #startReapLoop() {
+        // Run reap more frequently than the expiration interval for better reliability
+        const reapFrequency = Math.min(this.#interval / 4, 100); // At least every 100ms, or 1/4 of interval
         this.#reapIntervalId = setInterval(() => {
             this.#reap();
-        }, this.#interval);
+        }, reapFrequency);
+    }
+
+    // Public method for testing - manually trigger a reap
+    reap() {
+        this.#reap();
     }
 
     stopReapLoop() {

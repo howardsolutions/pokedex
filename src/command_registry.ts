@@ -3,6 +3,7 @@ import { commandExit } from "./command_exit.js";
 import { commandHelp } from "./command_help.js";
 import { commandMap } from "./command_map.js";
 import { commandMapBack } from "./command_mapb.js";
+import { commandCache } from "./command_cache.js";
 
 export function getCommands(): Record<string, CLICommand> {
   return {
@@ -25,6 +26,11 @@ export function getCommands(): Record<string, CLICommand> {
       name: "mapb",
       description: "Displays the previous 20 location areas in the Pokemon world",
       callback: commandMapBack,
+    },
+    cache: {
+      name: "cache",
+      description: "Shows cache statistics and performance information",
+      callback: commandCache,
     },
     // can add more commands here
   };

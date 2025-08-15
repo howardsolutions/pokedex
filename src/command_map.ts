@@ -1,7 +1,10 @@
 import type { State } from "./state.js";
 
 export async function commandMap(state: State): Promise<void> {
+  const startTime = Date.now();
+  
   try {
+    console.log("🗺️  Fetching locations...");
     const locations = await state.pokeAPI.fetchLocations(state.nextLocationsURL);
     
     // Display the location names
@@ -20,6 +23,9 @@ export async function commandMap(state: State): Promise<void> {
     if (locations.previous) {
       console.log("Type 'mapb' to go back to previous locations.");
     }
+    
+    const totalTime = Date.now() - startTime;
+    console.log(`\n⏱️  Total execution time: ${totalTime}ms`);
     
   } catch (error) {
     console.error("Error fetching locations:", error);
