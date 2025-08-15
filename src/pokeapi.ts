@@ -1,28 +1,65 @@
+import { Cache } from './pokecache';
+
 export class PokeAPI {
     private static readonly baseURL = "https://pokeapi.co/api/v2";
+    private cache: Cache;
 
-    constructor() { }
+    constructor(cache: Cache) {
+        this.cache = cache;
+    }
 
     async fetchLocations(pageURL?: string | null): Promise<ShallowLocations> {
         const url = pageURL || `${PokeAPI.baseURL}/location-area/`;
+        
+        // Check cache first
+        const cached = this.cache.get(url);
+        if (cached) {
+            console.log(`Using cached data for: ${url}`);
+            return cached.val;
+        }
+
+        // Make request if not in cache
+        console.log(`Fetching data for: ${url}`);
         const response = await fetch(url);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        return await response.json();
+        const data = await response.json();
+        
+        // Add to cache
+        this.cache.add(url, data);
+        console.log(`Added to cache: ${url}`);
+        
+        return data;
     }
 
     async fetchLocation(locationName: string): Promise<Location> {
         const url = `${PokeAPI.baseURL}/location-area/${locationName}/`;
+        
+        // Check cache first
+        const cached = this.cache.get(url);
+        if (cached) {
+            console.log(`Using cached data for: ${url}`);
+            return cached.val;
+        }
+
+        // Make request if not in cache
+        console.log(`Fetching data for: ${url}`);
         const response = await fetch(url);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        return await response.json();
+        const data = await response.json();
+        
+        // Add to cache
+        this.cache.add(url, data);
+        console.log(`Added to cache: ${url}`);
+        
+        return data;
     }
 }
 
